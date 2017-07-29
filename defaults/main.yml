@@ -4,7 +4,6 @@ dehydrated_version: v0.4.0
 dehydrated_cfg:
   # ip_version: 4 or 6
   # ca: https://acme-v01.api.letsencrypt.org/directory
-  ca: https://acme-staging.api.letsencrypt.org/directory
   # challengetype: http-01
   # wellknown: /var/www/dehydrated
   # keysize: 4096
