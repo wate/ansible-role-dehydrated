@@ -1,2 +1,17 @@
 ---
-# tasks file for dehydrated
+- name: install packages
+  yum:
+    name: dehydrated
+- name: create config file
+  template:
+    src: config.j2
+    dest: "{{ dehydrated_config_dir }}/config"
+- name: create domain file
+  template:
+    src: domains.txt.j2
+    dest: "{{ dehydrated_config_dir }}/domains.txt"
+- name: create hook file
+  template:
+    src: hook.sh.j2
+    dest: "{{ dehydrated_config_dir }}/hook.sh"
+    mode: "0750"
