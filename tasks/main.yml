@@ -2,6 +2,7 @@
 - name: install packages
   yum:
     name: dehydrated
+    enablerepo: epel
 - name: create config file
   template:
     src: config.j2
