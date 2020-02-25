@@ -24,6 +24,10 @@
 - name: register account key
   command: dehydrated --register --accept-terms
   when: result.files | length == 0
+- name: create auth file directory
+  file:
+    path: /var/www/dehydrated
+    state: directory
 - name: sign/renew non-existent/changed/expiring certificates
   command: dehydrated --cron
   when: dehydrated_auto_execute
