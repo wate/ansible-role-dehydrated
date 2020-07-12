@@ -4,5 +4,4 @@
   gather_facts: true
   become: true
   roles:
-    - role: common
     - role: dehydrated
