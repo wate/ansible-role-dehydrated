@@ -2,7 +2,7 @@
 dehydrated_cfg: {}
   # CA: https://acme-v02.api.letsencrypt.org/directory
   ## challenge type: http-01 / dns-01 / tls-plain-01
-  # CHALLENGETYPE: http-01
+  # CHALLENGETYPE: dns-01
 
 dehydrated_with_lexicon: true
 

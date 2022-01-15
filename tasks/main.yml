@@ -4,6 +4,10 @@
     name:
       - dehydrated
       - cron
+- name: install lexicon
+  apt:
+    name: lexicon
+  when: dehydrated_with_lexicon
 - name: create addtitional config file
   template:
     src: local.sh.j2
