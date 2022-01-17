@@ -1,7 +1,6 @@
 ---
 - name: install dehydrated
   apt:
-    update_cache: true
     name:
       - dehydrated
       - cron
