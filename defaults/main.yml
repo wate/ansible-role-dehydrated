@@ -1,8 +1,8 @@
 ---
 dehydrated_cfg: {}
-  # CA: https://acme-v02.api.letsencrypt.org/directory
-  ## challenge type: http-01 / dns-01 / tls-plain-01
-  # CHALLENGETYPE: dns-01
+# CA: https://acme-v02.api.letsencrypt.org/directory
+## challenge type: http-01 / dns-01 / tls-plain-01
+# CHALLENGETYPE: dns-01
 
 dehydrated_with_lexicon: true
 
@@ -11,12 +11,12 @@ dehydrated_lexicon_packages:
   - python3-boto3
 
 dehydrated_domains: []
-  # - name: example.com
-  #   domains:
-  #     - example.com
-  #     - *.example.com
-  # - name: example.net
-  #   domains: example.net
+# - name: example.com
+#   domains:
+#     - example.com
+#     - *.example.com
+# - name: example.net
+#   domains: example.net
 
 dehydrated_auto_execute: false
 
