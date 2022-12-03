@@ -229,7 +229,7 @@ startup_hook() {
   # This hook is called before the cron command to do some initial tasks
   # (e.g. starting a webserver).
 
-{{ dehydrated_hook_startup_hook }}
+{{ dehydrated_hook_startup }}
 
   :
 }
@@ -244,7 +244,7 @@ exit_hook() {
   # - ERROR
   #   Contains error message if dehydrated exits with error
 
-{{ dehydrated_hook_exit_hook }}
+{{ dehydrated_hook_exit }}
 
 }
 

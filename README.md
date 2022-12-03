@@ -1,137 +1,101 @@
 dehydrated
-=========
+=================
 
-[![Build Status](https://travis-ci.org/wate/ansible-role-dehydrated.svg?branch=master)](https://travis-ci.org/wate/ansible-role-dehydrated)
+setup dehydrated
 
-[dehydrated](https://github.com/lukas2511/dehydrated)のインストールとセットアップを行います。
+OS Platform
+-----------------
+
+### Debian
+
+- bullseye
+- buster
 
 Role Variables
 --------------
 
-### dehydrated_cfg
+### `dehydrated_cfg`
 
-dehydratedの設定内容を指定します。
+dehydratedの設定
 
-```yml
-dehydrated_cfg:
-  challengetype: http-01
-#   user: ""
-#   group: ""
-#   ca: https://acme-v02.api.letsencrypt.org/directory
-#   oldca: ""
-#   keysize: 4096
-#   openssl_cnf: ""
-#   openssl: openssl
-#   curl_opts: ""
-#   hook_chain: false
-#   renew_days: 30
-#   private_key_renew: true
-#   private_key_rollover: false
-#   key_algo: rsa
-#   contact_email: ""
-#   ocsp_must_staple: false
-#   ocsp_fetch: false
-#   auto_cleanup: false
-#   api: auto
-```
+### `dehydrated_with_lexicon`
 
-### dehydrated_domains
+lexiconのインストールの可否
 
-Let's Encryptで証明書を取得するドメインを指定します。
+### `dehydrated_lexicon_packages`
 
-```yml
-dehydrated_domains:
-    - name: example.com
-      domains:
-        - example.com
-        - *.example.com
-    - name: example.net
-      domains: example.net
-```
+インストールするlexicon関連パッケージ
 
-### dehydrated_auto_execute
+### `dehydrated_domains`
 
-プロビジョニング実行時にdehydratedの実行を行うか否かを指定します。
+dehydratedのドメイン設定
 
-```yml
-dehydrated_auto_execute: true
-```
+### `dehydrated_auto_execute`
 
-### dehydrated_cron
+dehydratedインストール時に実行する
 
-cronで実行する証明書の更新処理の実行時刻を指定します。
+### `dehydrated_cron`
 
-```yml
-dehydrated_cron:
-  hour: "{{ 23|random }}"
-  minute: "{{ 59|random }}"
-```
+自動更新処理の実行時間の設定
 
-### dehydrated_hook_initialize
+### `dehydrated_hook_initialize`
 
-フックスクリプトの初期化処理を指定します。
+フック設定(initialize)
 
-```yml
-dehydrated_hook_initialize: |
-    export PROVIDER=${PROVIDER:-"cloudflare"}
-```
+### `dehydrated_hook_startup`
 
-### dehydrated_hook_deploy_challenge
+フック設定(startup)
 
-deploy_challengeフック呼び出し時の実行内容を指定します。
+### `dehydrated_hook_deploy_challenge`
 
-```yml
-dehydrated_hook_deploy_challenge: |
-    lexicon $PROVIDER create ${DOMAIN} TXT --name="_acme-challenge.${DOMAIN}." --content="${TOKEN_VALUE}"
-```
+フック設定(deploy challenge)
 
-### dehydrated_hook_clean_challenge
+### `dehydrated_hook_clean_challenge`
 
-clean_challengeフック呼び出し時の実行内容を指定します。
+フック設定(clean challenge)
 
-```yml
-dehydrated_hook_clean_challenge: |
-    lexicon $PROVIDER delete ${DOMAIN} TXT --name="_acme-challenge.${DOMAIN}." --content="${TOKEN_VALUE}"
-```
+### `dehydrated_hook_sync_cert`
 
-### dehydrated_hook_deploy_cert
+フック設定(sync cert)
 
-deploy_certフック呼び出し時の実行内容を指定します。
+### `dehydrated_hook_deploy_cert`
 
-### dehydrated_hook_unchanged_cert
+フック設定(deploy cert)
 
-unchanged_certフック呼び出し時の実行内容を指定します。
+### `dehydrated_hook_deploy_ocsp`
 
-### dehydrated_hook_invalid_challenge
+フック設定(deploy ocsp)
 
-invalid_challengeフック呼び出し時の実行内容を指定します。
+### `dehydrated_hook_unchanged_cert`
 
-### dehydrated_hook_request_failure
+フック設定(unchanged cert)
 
-request_failureフック呼び出し時の実行内容を指定します。
+### `dehydrated_hook_invalid_challenge`
 
-### dehydrated_hook_generate_csr
+フック設定(invalid challenge)
 
-generate_csrフック呼び出し時の実行内容を指定します。
+### `dehydrated_hook_request_failure`
 
-### dehydrated_hook_startup_hook
+フック設定(request failure)
 
-startup_hookフック呼び出し時の実行内容を指定します。
+### `dehydrated_hook_generate_csr`
 
-### dehydrated_hook_exit_hook
+フック設定(generate csr)
 
-exit_hookフック呼び出し時の実行内容を指定します。
+### `dehydrated_hook_exit`
+
+フック設定(exit)
 
 Example Playbook
-----------------
+--------------
 
-```yml
+```yaml
 - hosts: servers
   roles:
     - role: dehydrated
 ```
 
 License
--------
+--------------
 
 Apache License 2.0
