@@ -1,7 +1,7 @@
 dehydrated
 =================
 
-setup dehydrated
+Setup dehydrated
 
 OS Platform
 -----------------
