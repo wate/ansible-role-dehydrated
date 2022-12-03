@@ -2,7 +2,7 @@
 galaxy_info:
   role_name: dehydrated
   author: yoshiaki tanaka
-  description: setup dehydrated
+  description: Setup dehydrated
   license: Apache
   min_ansible_version: "2.13"
   platforms:
