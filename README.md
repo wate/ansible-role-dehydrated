@@ -22,7 +22,7 @@ dehydratedの設定
 
 ### `dehydrated_with_lexicon`
 
-lexiconのインストールの可否
+lexiconもインストールするか否か
 
 ### `dehydrated_lexicon_packages`
 
@@ -30,11 +30,11 @@ lexiconのインストールの可否
 
 ### `dehydrated_domains`
 
-dehydratedのドメイン設定
+dehydratedで管理するドメインの設定
 
 ### `dehydrated_auto_execute`
 
-dehydratedインストール時に実行する
+dehydratedインストール時に実行するか否か
 
 ### `dehydrated_cron`
 
@@ -42,51 +42,51 @@ dehydratedインストール時に実行する
 
 ### `dehydrated_hook_initialize`
 
-フック設定(initialize)
+dehydrated実行時のフック設定(initialize)
 
 ### `dehydrated_hook_startup`
 
-フック設定(startup)
+dehydrated実行時のフック設定(startup)
 
 ### `dehydrated_hook_deploy_challenge`
 
-フック設定(deploy challenge)
+dehydrated実行時のフック設定(deploy challenge)
 
 ### `dehydrated_hook_clean_challenge`
 
-フック設定(clean challenge)
+dehydrated実行時のフック設定(clean challenge)
 
 ### `dehydrated_hook_sync_cert`
 
-フック設定(sync cert)
+dehydrated実行時のフック設定(sync cert)
 
 ### `dehydrated_hook_deploy_cert`
 
-フック設定(deploy cert)
+dehydrated実行時のフック設定(deploy cert)
 
 ### `dehydrated_hook_deploy_ocsp`
 
-フック設定(deploy ocsp)
+dehydrated実行時のフック設定(deploy ocsp)
 
 ### `dehydrated_hook_unchanged_cert`
 
-フック設定(unchanged cert)
+dehydrated実行時のフック設定(unchanged cert)
 
 ### `dehydrated_hook_invalid_challenge`
 
-フック設定(invalid challenge)
+dehydrated実行時のフック設定(invalid challenge)
 
 ### `dehydrated_hook_request_failure`
 
-フック設定(request failure)
+dehydrated実行時のフック設定(request failure)
 
 ### `dehydrated_hook_generate_csr`
 
-フック設定(generate csr)
+dehydrated実行時のフック設定(generate csr)
 
 ### `dehydrated_hook_exit`
 
-フック設定(exit)
+dehydrated実行時のフック設定(exit)
 
 Example Playbook
 --------------
