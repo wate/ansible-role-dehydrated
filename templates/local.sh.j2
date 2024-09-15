@@ -2,4 +2,4 @@
 {% for cfg_name, cfg_value in dehydrated_cfg.items() -%}
 {{ cfg_name }}="{{ cfg_value }}"
 {% endfor %}
-HOOK="{{ dehydrated_config_base_dir }}/hook.sh"
+HOOK="/etc/dehydrated/hook.sh"

@@ -22,13 +22,12 @@ dehydrated_lexicon_packages:
 ## -----------------
 ## dehydratedで管理するドメインの設定
 ## -----------------
-dehydrated_domains: []
-# - name: example.com
-#   domains:
-#     - example.com
-#     - *.example.com
-# - name: example.net
-#   domains: example.net
+dehydrated_domains: {}
+  # example.com:
+  # example.net: example.net
+  # example.org:
+  #   - example.org
+  #   - *.example.org
 
 ## -----------------
 ## dehydratedインストール時に実行するか否か
