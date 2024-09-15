@@ -1,3 +1,7 @@
-{% for domain in dehydrated_domains -%}
-{{ domain.domains if domain.domains is string else domain.domains | join(' ') }} > {{ domain.name }}
+{% for domain in dehydrated_domains | dict2items -%}
+{% if domain.value -%}
+{{ domain.value is string | ternary(domain.value, domain.value | join(' ')) }} > {{ domain.key }}
+{% else -%}
+{{ domain.key }}
+{% endif %}
 {% endfor %}

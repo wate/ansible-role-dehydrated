@@ -2,19 +2,80 @@
 - name: Verify
   hosts: all
   gather_facts: true
-  check_mode: true
+  become: true
   tasks:
-    - name: test dehydrated package
-      ansible.builtin.apt:
-        name: dehydrated
-      register: result
-    - name: assert package
+    - name: Gather package facts
+      ansible.builtin.package_facts:
+        manager: auto
+    - name: Assert package
       ansible.builtin.assert:
-        that: result is not changed
-    - name: test lexicon package
-      ansible.builtin.apt:
-        name: lexicon
-      register: result
-    - name: assert package
-      ansible.builtin.assert:
-        that: result is not changed
+        that:
+          - ansible_facts.packages['dehydrated']
+          - ansible_facts.packages['lexicon']
+    - name: Test domains.txt
+      block:
+        - name: Get local.sh CA content
+          ansible.builtin.command:
+            cmd: grep "CA=" /etc/dehydrated/conf.d/local.sh
+          changed_when: false
+          failed_when: local_sh_content.rc > 1
+          register: local_sh_content
+        - name: Test local.sh
+          block:
+            - name: Assert
+              ansible.builtin.assert:
+                that:
+                  - local_sh_content.rc == 0
+                  - local_sh_content.stdout == 'CA="https://acme-staging-v02.api.letsencrypt.org/directory"'
+            - name: Get local.sh CHALLENGETYPE content
+              ansible.builtin.command:
+                cmd: grep "CHALLENGETYPE=" /etc/dehydrated/conf.d/local.sh
+              changed_when: false
+              failed_when: local_sh_content.rc > 1
+              register: local_sh_content
+            - name: Assert local.sh
+              ansible.builtin.assert:
+                that:
+                  - local_sh_content.rc == 0
+                  - local_sh_content.stdout == 'CHALLENGETYPE="dns-01"'
+    - name: Test domains.txt
+      block:
+        - name: Test value is none
+          block:
+            - name: Get domains.txt content(value is none)
+              ansible.builtin.command:
+                cmd: grep "example.com" /etc/dehydrated/domains.txt
+              failed_when: domains_txt_content.rc > 1
+              changed_when: false
+              register: domains_txt_content
+            - name: Assert domains.txt
+              ansible.builtin.assert:
+                that:
+                  - domains_txt_content.rc == 0
+                  - domains_txt_content.stdout == 'example.com'
+        - name: Test value is string
+          block:
+            - name: Get domains.txt content(value is string)
+              ansible.builtin.command:
+                cmd: grep "example.net" /etc/dehydrated/domains.txt
+              failed_when: domains_txt_content.rc > 1
+              changed_when: false
+              register: domains_txt_content
+            - name: Assert domains.txt
+              ansible.builtin.assert:
+                that:
+                  - domains_txt_content.rc == 0
+                  - domains_txt_content.stdout == 'example.net > example.net'
+        - name: Test value is list
+          block:
+            - name: Get domains.txt content(value is list)
+              ansible.builtin.command:
+                cmd: grep "star.service.example.org" /etc/dehydrated/domains.txt
+              failed_when: domains_txt_content.rc > 1
+              changed_when: false
+              register: domains_txt_content
+            - name: Assert domains.txt
+              ansible.builtin.assert:
+                that:
+                  - domains_txt_content.rc == 0
+                  - domains_txt_content.stdout == 'service.example.org *.service.example.org > star.service.example.org'
