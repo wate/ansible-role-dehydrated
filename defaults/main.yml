@@ -3,9 +3,11 @@
 ## dehydratedの設定
 ## -----------------
 dehydrated_cfg: {}
-# CA: https://acme-v02.api.letsencrypt.org/directory
-## challenge type: http-01 / dns-01 / tls-plain-01
-# CHALLENGETYPE: dns-01
+  ## challenge type: http-01 / dns-01 / tls-plain-01
+  # CHALLENGETYPE: dns-01
+  ## Staging Environment
+  ## @see https://letsencrypt.org/docs/staging-environment/
+  # CA: https://acme-staging-v02.api.letsencrypt.org/directory
 
 ## -----------------
 ## lexiconもインストールするか否か
