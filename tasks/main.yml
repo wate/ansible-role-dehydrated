@@ -8,7 +8,7 @@
   ansible.builtin.apt:
     name: "{{ dehydrated_lexicon_packages }}"
   when: dehydrated_with_lexicon
-- name: Create addtitional config file
+- name: Create additional config file
   ansible.builtin.template:
     src: local.sh.j2
     dest: /etc/dehydrated/conf.d/local.sh
