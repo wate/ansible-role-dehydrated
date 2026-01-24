@@ -7,11 +7,34 @@
     - name: Gather package facts
       ansible.builtin.package_facts:
         manager: auto
-    - name: Assert package
+    - name: Assert dehydrated package
       ansible.builtin.assert:
         that:
-          - ansible_facts.packages['dehydrated']
-          - ansible_facts.packages['lexicon']
+          - ansible_facts.packages['dehydrated'] is defined
+        fail_msg: "dehydrated package is not installed"
+        success_msg: "dehydrated package is installed"
+    - name: Assert lexicon installation
+      block:
+        - name: Check lexicon in virtualenv
+          ansible.builtin.stat:
+            path: "{{ (dehydrated_lexicon_venv_path | default('/opt/dehydrated-venv')) }}/bin/lexicon"
+          register: lexicon_venv_stat
+          when: dehydrated_lexicon_install_method == 'pip'
+        - name: Assert lexicon via apt
+          ansible.builtin.assert:
+            that:
+              - ansible_facts.packages['lexicon'] is defined
+            fail_msg: "lexicon package is not installed via apt"
+            success_msg: "lexicon package is installed via apt"
+          when: dehydrated_lexicon_install_method == 'apt'
+        - name: Assert lexicon via venv
+          ansible.builtin.assert:
+            that:
+              - lexicon_venv_stat.stat.exists
+              - lexicon_venv_stat.stat.executable
+            fail_msg: "lexicon is not installed in virtualenv at {{ (dehydrated_lexicon_venv_path | default('/opt/dehydrated-venv')) }}/bin/lexicon"
+            success_msg: "lexicon is installed in virtualenv"
+          when: dehydrated_lexicon_install_method == 'pip'
     - name: Test domains.txt
       block:
         - name: Get local.sh CA content
@@ -27,6 +50,8 @@
                 that:
                   - local_sh_content.rc == 0
                   - local_sh_content.stdout == 'CA="https://acme-staging-v02.api.letsencrypt.org/directory"'
+                fail_msg: "Dehydrated CA configuration is not correctly set"
+                success_msg: "Dehydrated CA configuration is correctly set"
             - name: Get local.sh CHALLENGETYPE content
               ansible.builtin.command:
                 cmd: grep "CHALLENGETYPE=" /etc/dehydrated/conf.d/local.sh
@@ -38,6 +63,8 @@
                 that:
                   - local_sh_content.rc == 0
                   - local_sh_content.stdout == 'CHALLENGETYPE="dns-01"'
+                fail_msg: "Dehydrated CHALLENGETYPE configuration is not correctly set"
+                success_msg: "Dehydrated CHALLENGETYPE configuration is correctly set"
     - name: Test domains.txt
       block:
         - name: Test value is none
@@ -53,6 +80,8 @@
                 that:
                   - domains_txt_content.rc == 0
                   - domains_txt_content.stdout == 'example.com'
+                fail_msg: "domains.txt does not contain expected value (example.com)"
+                success_msg: "domains.txt contains expected value (example.com)"
         - name: Test value is string
           block:
             - name: Get domains.txt content(value is string)
@@ -66,6 +95,8 @@
                 that:
                   - domains_txt_content.rc == 0
                   - domains_txt_content.stdout == 'example.net > example.net'
+                fail_msg: "domains.txt does not contain expected value (example.net)"
+                success_msg: "domains.txt contains expected value (example.net)"
         - name: Test value is list
           block:
             - name: Get domains.txt content(value is list)
@@ -79,3 +110,5 @@
                 that:
                   - domains_txt_content.rc == 0
                   - domains_txt_content.stdout == 'service.example.org *.service.example.org > star.service.example.org'
+                fail_msg: "domains.txt does not contain expected value (service.example.org)"
+                success_msg: "domains.txt contains expected value (service.example.org)"

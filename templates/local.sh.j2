@@ -3,3 +3,11 @@
 {{ cfg_name }}="{{ cfg_value }}"
 {% endfor %}
 HOOK="/etc/dehydrated/hook.sh"
+
+# Ensure lexicon in venv is discoverable when using pip method
+{% if dehydrated_lexicon_install_method_resolved is defined and dehydrated_lexicon_install_method_resolved == 'pip' %}
+{% if dehydrated_lexicon_venv_path is defined and dehydrated_lexicon_venv_path %}
+PATH="{{ dehydrated_lexicon_venv_path }}/bin:${PATH}"
+export PATH
+{% endif %}
+{% endif %}

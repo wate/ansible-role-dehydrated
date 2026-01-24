@@ -1,13 +1,67 @@
 ---
+- name: Find platform variable file
+  ansible.builtin.set_fact:
+    variable_file: "{{ lookup('first_found', params, errors='ignore') }}"
+  vars:
+    params:
+      files:
+        - "{{ ansible_facts.os_family }}/{{ ansible_facts.distribution }}/{{ ansible_facts.distribution_major_version }}.yml"
+        - "{{ ansible_facts.os_family }}/{{ ansible_facts.distribution }}.yml"
+        - "{{ ansible_facts.os_family }}.yml"
+      paths:
+        - vars
+  tags: role_dehydrated_include_vars
+- name: Include variable file
+  ansible.builtin.include_vars:
+    file: "{{ variable_file }}"
+  when:
+    - variable_file is not none
+    - variable_file | length > 0
+  tags: role_dehydrated_include_vars
 - name: Install dehydrated
   ansible.builtin.apt:
     name:
       - dehydrated
       - cron
-- name: Install lexicon
-  ansible.builtin.apt:
-    name: "{{ dehydrated_lexicon_packages }}"
+- name: Install lexicon (auto apt/pip)
   when: dehydrated_with_lexicon
+  block:
+    - name: Resolve lexicon install method
+      when: dehydrated_lexicon_install_method == 'auto'
+      block:
+        - name: Detect lexicon availability (APT)
+          ansible.builtin.command:
+            cmd: apt-cache show lexicon
+          changed_when: false
+          failed_when: false
+          register: lexicon_apt_cache
+        - name: Set lexicon install method (auto)
+          ansible.builtin.set_fact:
+            dehydrated_lexicon_install_method_resolved: "{{ 'apt' if lexicon_apt_cache.rc == 0 else 'pip' }}"
+    - name: Set lexicon install method (explicit)
+      ansible.builtin.set_fact:
+        dehydrated_lexicon_install_method_resolved: "{{ dehydrated_lexicon_install_method }}"
+      when: dehydrated_lexicon_install_method != 'auto'
+    - name: Install lexicon via apt
+      ansible.builtin.apt:
+        name: "{{ dehydrated_lexicon_packages }}"
+      when: dehydrated_lexicon_install_method_resolved == 'apt'
+    - name: Install lexicon via pip in virtualenv
+      when: dehydrated_lexicon_install_method_resolved == 'pip'
+      block:
+        - name: Ensure venv dependencies present
+          ansible.builtin.apt:
+            name:
+              - python3-venv
+              - python3-pip
+        - name: Create virtualenv for lexicon
+          ansible.builtin.command:
+            cmd: python3 -m venv "{{ dehydrated_lexicon_venv_path }}"
+            creates: "{{ dehydrated_lexicon_venv_path }}/bin/activate"
+        - name: Install lexicon packages via pip
+          ansible.builtin.pip:
+            name: "{{ dehydrated_lexicon_pip_packages }}"
+            virtualenv: "{{ dehydrated_lexicon_venv_path }}"
 - name: Create additional config file
   ansible.builtin.template:
     src: local.sh.j2
