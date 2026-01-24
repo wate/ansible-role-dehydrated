@@ -15,11 +15,9 @@ dehydrated_cfg: {}
 dehydrated_with_lexicon: true
 
 ## -----------------
-## インストールするlexicon関連パッケージ
+## lexiconのインストール方法: `auto` / `apt` / `pip`
 ## -----------------
-dehydrated_lexicon_packages:
-  - lexicon
-  - python3-boto3
+dehydrated_lexicon_install_method: auto
 
 ## -----------------
 ## dehydratedで管理するドメインの設定

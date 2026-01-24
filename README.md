@@ -8,8 +8,8 @@ OS Platform
 
 ### Debian
 
+- trixie
 - bookworm
-- bullseye
 
 Role Variables
 --------------
@@ -26,9 +26,9 @@ dehydratedの設定
 
 lexiconもインストールするか否か
 
-#### `dehydrated_lexicon_packages`
+#### `dehydrated_lexicon_install_method`
 
-インストールするlexicon関連パッケージ
+lexiconのインストール方法: `auto` / `apt` / `pip`
 
 #### `dehydrated_domains`
 
@@ -89,6 +89,23 @@ dehydrated実行時のフック設定(generate csr)
 #### `dehydrated_hook_exit`
 
 dehydrated実行時のフック設定(exit)
+
+### [vars/main.yml](vars/main.yml)
+
+設定値については[vars/main.yml](vars/main.yml)を参照してください。
+
+#### `dehydrated_lexicon_packages`
+
+インストールするlexicon関連パッケージ
+
+#### `dehydrated_lexicon_pip_packages`
+
+pipでインストールするlexicon関連パッケージ
+
+#### `dehydrated_lexicon_venv_path`
+
+lexiconを隔離する仮想環境の配置先  
+pip選択時に使用します
 
 Example Playbook
 --------------
