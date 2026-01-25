@@ -20,6 +20,19 @@ dehydrated_with_lexicon: true
 dehydrated_lexicon_install_method: auto
 
 ## -----------------
+## lexicon関連パッケージ（APT / pipx共通のデフォルト）
+## -----------------
+dehydrated_lexicon_packages:
+  - lexicon
+  - python3-boto3
+
+## -----------------
+## pipxで注入する追加依存パッケージ
+## -----------------
+dehydrated_lexicon_pip_inject_packages:
+  - boto3
+
+## -----------------
 ## dehydratedで管理するドメインの設定
 ## -----------------
 dehydrated_domains: {}

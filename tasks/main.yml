@@ -37,7 +37,7 @@
           register: lexicon_apt_cache
         - name: Set lexicon install method (auto)
           ansible.builtin.set_fact:
-            dehydrated_lexicon_install_method_resolved: "{{ 'apt' if lexicon_apt_cache.rc == 0 else 'pip' }}"
+            dehydrated_lexicon_install_method_resolved: "{{ 'apt' if (lexicon_apt_cache.rc == 0 and lexicon_apt_cache.stdout | length > 0) else 'pip' }}"
     - name: Set lexicon install method (explicit)
       ansible.builtin.set_fact:
         dehydrated_lexicon_install_method_resolved: "{{ dehydrated_lexicon_install_method }}"
@@ -46,22 +46,24 @@
       ansible.builtin.apt:
         name: "{{ dehydrated_lexicon_packages }}"
       when: dehydrated_lexicon_install_method_resolved == 'apt'
-    - name: Install lexicon via pip in virtualenv
+    - name: Install lexicon via pipx
       when: dehydrated_lexicon_install_method_resolved == 'pip'
       block:
-        - name: Ensure venv dependencies present
+        - name: Install pipx
           ansible.builtin.apt:
-            name:
-              - python3-venv
-              - python3-pip
-        - name: Create virtualenv for lexicon
-          ansible.builtin.command:
-            cmd: python3 -m venv "{{ dehydrated_lexicon_venv_path }}"
-            creates: "{{ dehydrated_lexicon_venv_path }}/bin/activate"
-        - name: Install lexicon packages via pip
-          ansible.builtin.pip:
-            name: "{{ dehydrated_lexicon_pip_packages }}"
-            virtualenv: "{{ dehydrated_lexicon_venv_path }}"
+            name: pipx
+        - name: Install dns-lexicon with pipx
+          community.general.pipx:
+            name: dns-lexicon
+            state: present
+            global: true
+        - name: Inject optional packages into dns-lexicon environment
+          community.general.pipx:
+            name: dns-lexicon
+            inject_packages: "{{ dehydrated_lexicon_pip_inject_packages }}"
+            state: inject
+            global: true
+          when: dehydrated_lexicon_pip_inject_packages | length > 0
 - name: Create additional config file
   ansible.builtin.template:
     src: local.sh.j2
