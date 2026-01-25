@@ -32,7 +32,9 @@ provisioner:
   config_options:
     defaults:
       hash_behaviour: merge
-      remote_tmp: /tmp
+      callback_result_format: yaml
+    ssh_connection:
+      pipelining: true
   playbooks:
     converge: ${MOLECULE_PLAYBOOK:-converge.yml}
 # verifier:
