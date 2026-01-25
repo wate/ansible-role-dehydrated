@@ -13,28 +13,33 @@
           - ansible_facts.packages['dehydrated'] is defined
         fail_msg: "dehydrated package is not installed"
         success_msg: "dehydrated package is installed"
-    - name: Assert lexicon installation
+    - name: Assert lexicon installation via apt
+      ansible.builtin.assert:
+        that:
+          - ansible_facts.packages['lexicon'] is defined
+        fail_msg: "lexicon package is not installed via apt"
+        success_msg: "lexicon package is installed via apt"
+      when: dehydrated_lexicon_install_method == 'apt'
+    - name: Assert lexicon installation via pipx
+      when: dehydrated_lexicon_install_method in ['auto', 'pip']
       block:
-        - name: Check lexicon in virtualenv
+        - name: Assert pipx package is installed
+          ansible.builtin.assert:
+            that:
+              - ansible_facts.packages['pipx'] is defined
+            fail_msg: "pipx package is not installed"
+            success_msg: "pipx package is installed"
+        - name: Check lexicon binary via pipx (global)
           ansible.builtin.stat:
-            path: "{{ (dehydrated_lexicon_venv_path | default('/opt/dehydrated-venv')) }}/bin/lexicon"
-          register: lexicon_venv_stat
-          when: dehydrated_lexicon_install_method == 'pip'
-        - name: Assert lexicon via apt
+            path: /usr/local/bin/lexicon
+          register: lexicon_pipx_stats
+        - name: Assert pipx binary exists and is executable
           ansible.builtin.assert:
             that:
-              - ansible_facts.packages['lexicon'] is defined
-            fail_msg: "lexicon package is not installed via apt"
-            success_msg: "lexicon package is installed via apt"
-          when: dehydrated_lexicon_install_method == 'apt'
-        - name: Assert lexicon via venv
-          ansible.builtin.assert:
-            that:
-              - lexicon_venv_stat.stat.exists
-              - lexicon_venv_stat.stat.executable
-            fail_msg: "lexicon is not installed in virtualenv at {{ (dehydrated_lexicon_venv_path | default('/opt/dehydrated-venv')) }}/bin/lexicon"
-            success_msg: "lexicon is installed in virtualenv"
-          when: dehydrated_lexicon_install_method == 'pip'
+              - lexicon_pipx_stats.stat.exists
+              - lexicon_pipx_stats.stat.executable
+            fail_msg: "lexicon is not installed via pipx at /usr/local/bin/lexicon"
+            success_msg: "lexicon is installed via pipx"
     - name: Test domains.txt
       block:
         - name: Get local.sh CA content
@@ -112,3 +117,32 @@
                   - domains_txt_content.stdout == 'service.example.org *.service.example.org > star.service.example.org'
                 fail_msg: "domains.txt does not contain expected value (service.example.org)"
                 success_msg: "domains.txt contains expected value (service.example.org)"
+        - name: Test PATH for pipx (cron equivalence)
+          when: dehydrated_lexicon_install_method in ['auto', 'pip']
+          block:
+            - name: Check local.sh contains PATH export
+              ansible.builtin.command:
+                cmd: grep -c "export PATH" /etc/dehydrated/conf.d/local.sh
+              register: path_check
+              changed_when: false
+              failed_when: path_check.rc > 1
+            - name: Assert PATH export present
+              ansible.builtin.assert:
+                that:
+                  - path_check.stdout | int > 0
+                fail_msg: "PATH is not exported in /etc/dehydrated/conf.d/local.sh"
+                success_msg: "PATH export is present in local.sh"
+            - name: Verify lexicon reachable after sourcing local.sh
+              ansible.builtin.shell:
+                cmd: source /etc/dehydrated/conf.d/local.sh && command -v lexicon
+              args:
+                executable: /bin/bash
+              register: lexicon_path_check
+              changed_when: false
+            - name: Assert lexicon path includes /usr/local/bin
+              ansible.builtin.assert:
+                that:
+                  - lexicon_path_check.stdout is defined
+                  - "'/usr/local/bin/lexicon' in lexicon_path_check.stdout"
+                fail_msg: "lexicon is not found in PATH after sourcing local.sh"
+                success_msg: "lexicon is reachable via PATH after sourcing local.sh"
