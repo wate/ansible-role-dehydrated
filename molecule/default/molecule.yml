@@ -37,29 +37,26 @@ provisioner:
       pipelining: true
   playbooks:
     converge: ${MOLECULE_PLAYBOOK:-converge.yml}
-# verifier:
-#   name: ansible
-# scenario:
-#   test_sequence:
-#     - dependency
-#     - cleanup
-#     - destroy
-#     - syntax
-#     - create
-#     - prepare
-#     - converge
-#     - idempotence
-#     - side_effect
-#     - verify
-#     - cleanup
-#     - destroy
+verifier:
+  name: ansible
+scenario:
+  ## cleanupとside_effectはドライバにプレイブックが無いため実行しません
+  test_sequence:
+    - dependency
+    - destroy
+    - syntax
+    - create
+    - prepare
+    - converge
+    - idempotence
+    - verify
+    - destroy
 #   create_sequence:
 #     - dependency
 #     - create
 #     - prepare
 #   check_sequence:
 #     - dependency
-#     - cleanup
 #     - destroy
 #     - create
 #     - prepare
@@ -73,5 +70,4 @@ provisioner:
 #     - converge
 #   destroy_sequence:
 #     - dependency
-#     - cleanup
 #     - destroy

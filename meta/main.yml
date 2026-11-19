@@ -1,6 +1,7 @@
 ---
 galaxy_info:
   role_name: dehydrated
+  namespace: wate
   author: yoshiaki tanaka
   description: Setup dehydrated
   license: Apache

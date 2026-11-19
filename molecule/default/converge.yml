@@ -7,10 +7,12 @@
     - name: Update cache(apt)
       ansible.builtin.apt:
         update_cache: true
+      changed_when: false
       when: ansible_facts.pkg_mgr == 'apt'
     - name: Update cache(dnf)
       ansible.builtin.dnf:
         update_cache: true
+      changed_when: false
       when: ansible_facts.pkg_mgr == 'dnf'
   tasks:
     - name: Include role
